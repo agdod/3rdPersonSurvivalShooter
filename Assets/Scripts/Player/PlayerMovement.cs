@@ -9,17 +9,18 @@ public class PlayerMovement : MonoBehaviour
 
 	private CharacterController _playerCC;
 	[Header("Controller Settings")]
-	[Range(0,10)]
+	[Range(0, 10)]
 	[SerializeField] private float _speed;
 	[SerializeField] private float _jumpHeight;
 	[SerializeField] private float _gravityModifer;
 	[Space]
 	[Header("Camera Attributes")]
 	[SerializeField] private float _mouseSensitivity;
+	[SerializeField] private float _cameraXAxisMin;
+	[SerializeField] private float _cameraXAxisMax;
 
 	private Vector3 _direction;
 	private Camera _mainCamera;
-	
 
 	private void Start()
 	{
@@ -28,13 +29,11 @@ public class PlayerMovement : MonoBehaviour
 		LockCursor();
 	}
 
-
-
 	private void Update()
 	{
 		CalcuateMovement();
 		CameraController();
-		
+
 		// Escape key to unlock cursor.
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
@@ -54,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
 		float mouseY = Input.GetAxis("Mouse Y");
 
 		// Apply mouseX movment to player roation y (look left and right).
-		
+
 		float lookRotation = mouseX * _mouseSensitivity * Time.deltaTime;
 		Vector3 currentRotation = transform.localEulerAngles;
 		currentRotation.y += lookRotation;
@@ -62,18 +61,29 @@ public class PlayerMovement : MonoBehaviour
 		transform.localEulerAngles = currentRotation;
 
 		// Apply mouseY moveemnt to Camera rotationX value (look up down).
-		
-		float verticalLook = mouseY * _mouseSensitivity * Time.deltaTime;
+
+		float verticalLook = mouseY * -_mouseSensitivity * Time.deltaTime;
 
 		// Get the current camera rotation and apply mouseY movement.
 
-		Vector3 cameraRotation =_mainCamera.transform.localEulerAngles;
+		Vector3 cameraRotation = _mainCamera.transform.localEulerAngles;
 
-		cameraRotation.x -= verticalLook;
-		
+		// Clamp camera roation. 
+
+		cameraRotation.x += verticalLook;
+		if (cameraRotation.x > 180)
+		{
+			cameraRotation.x -= 360;
+		} else
+		{
+			// Do nothing.
+		}
+		cameraRotation.x = Mathf.Clamp(cameraRotation.x, _cameraXAxisMin, _cameraXAxisMax);
+
 		// Apply the rotation as Quaternion to the camera transform.
 
-		_mainCamera.transform.localRotation = Quaternion.AngleAxis (cameraRotation.x, Vector3.right);
+		_mainCamera.transform.localRotation = Quaternion.AngleAxis(cameraRotation.x, Vector3.right);
+		//_mainCamera.transform.localRotation.eulerAngles.x = Mathf.Clamp(_mainCamera.transform.localRotation.eulerAngles.x, _cameraXAxisMin, _cameraXAxisMax);
 	}
 
 	private void CalcuateMovement()
@@ -87,9 +97,9 @@ public class PlayerMovement : MonoBehaviour
 
 			// X-Axis movemnt.
 			float horizontal = Input.GetAxis("Horizontal");
-			
+
 			_direction = new Vector3(horizontal, yDirection, vertical);
-			
+
 			// Y-Axis movemnt.
 			if (Input.GetKeyDown(KeyCode.Space))
 			{
@@ -97,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
 				yDirection = _jumpHeight;
 				Debug.Log("Jump.");
 			}
-		} 
+		}
 		else
 		{
 			yDirection -= _gravityModifer * Time.deltaTime;
@@ -105,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
 
 		_direction.y = yDirection;
 		Vector3 velocity = _direction * _speed;
-		
+
 		// Transform local space to world space
 		velocity = transform.TransformDirection(velocity);
 
