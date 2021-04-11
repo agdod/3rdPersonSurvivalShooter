@@ -6,6 +6,16 @@ public class Shoot : MonoBehaviour
 {
 	// Left click to fire.
 	[SerializeField] private float _range = 100f;
+	[SerializeField] private int _damage;
+	[SerializeField] private GameObject _hitEffect;
+
+	private int _layerMask = 1 << 8;
+
+	private void Start()
+	{
+		// inverse the bit mask.
+		_layerMask = ~_layerMask;
+	}
 
 	private void FixedUpdate()
 	{
@@ -18,15 +28,27 @@ public class Shoot : MonoBehaviour
 	private void FireRayCast()
 	{
 		// Fire ray from center of screen (crosshair positon).
-		
+
 		Vector3 crossHairPoint = new Vector3(0.5f, 0.5f, 0f);
 		Ray rayOrigin = Camera.main.ViewportPointToRay(crossHairPoint);
 		RaycastHit hitInfo;
-		if (Physics.Raycast(rayOrigin, out hitInfo , _range))
+		if (Physics.Raycast(rayOrigin, out hitInfo, _range,_layerMask))
 		{
 			Debug.DrawLine(rayOrigin.origin, hitInfo.point, Color.red);
 			Debug.Log(" Hit object " + hitInfo.transform.name);
+			if (hitInfo.collider.TryGetComponent(out Health health))
+			{
+				VisualEffects(hitInfo);
+				health.Damage(_damage);
+			}
 		}
-		
+	}
+
+	private void VisualEffects(RaycastHit hitInfo)
+	{
+		// Instantiate blood splat effects at raycast postion.
+		// Rotate towards the hit normal postion (surface normal).
+		Debug.Log("blood spat.");
+		Instantiate(_hitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
 	}
 }
