@@ -49,11 +49,23 @@ public class Shoot : MonoBehaviour
 	{
 		// Instantiate blood splat effects at raycast postion.
 		// Rotate towards the hit normal postion (surface normal).
-		// NOTE : BloodSpat effect is Recycled, the recycling is controlled by BloodSplat itself.
+		// Parent to enemy so Splat moves with enemy.
+		// On recycling send back to pool - use of delegect to return to objectpool.
 
-		Debug.Log("blood spat.");
+		// TODO - what happends when enemy is destroyed, Bloodspat will be destroyed with enemy
+		// Bloodspat need recyvling on destroying of enemy.
+
 		GameObject go = _poolManager.RequestFromPool("BloodSplat");
 		go.transform.position = hitInfo.point;
 		go.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
+		go.transform.parent = hitInfo.transform;
+		BloodSplat bloodSplat = go.GetComponent<BloodSplat>();
+		bloodSplat.bubbleRecycle += OnBubbleRecycleObject;
 	}
+
+	private void OnBubbleRecycleObject(GameObject obj)
+	{
+		_poolManager.onRecycleObject("BloodSplat", obj);
+	}
+
 }

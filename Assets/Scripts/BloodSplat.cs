@@ -12,6 +12,9 @@ public class BloodSplat : MonoBehaviour
 	private float _timeElapsed;
 	private SpriteRenderer _spriteRenderer;
 
+	public delegate void BubbleRecycle(GameObject obj);
+	public BubbleRecycle bubbleRecycle;
+
 	private void OnEnable()
 	{
 		Invoke("OnRecycle", _timeToLive);
@@ -20,6 +23,7 @@ public class BloodSplat : MonoBehaviour
 	private void Start()
 	{
 		_spriteRenderer = GetComponent<SpriteRenderer>();
+		//bubbleRecycle = OnBubbleRecycle;
 	}
 
 	private void OnRecycle()
@@ -41,6 +45,12 @@ public class BloodSplat : MonoBehaviour
 			yield return new WaitForEndOfFrame();
 		}
 		alphaValue = 0;
+		// Bubble the delegate up
+		bubbleRecycle(this.gameObject);
+	}
+
+	public void OnBubbleRecycle(GameObject obj)
+	{
 		this.gameObject.SetActive(false);
 	}
 }

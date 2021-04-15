@@ -29,6 +29,11 @@ public class PoolManager : MonoBehaviour
 			get { return _amount; }
 		}
 
+		public Transform Container
+		{
+			get { return _objectContainer.transform; }
+		}
+
 		public GameObject RequestObject()
 		{
 			// Loop through pool, checking for inactive object.
@@ -63,10 +68,13 @@ public class PoolManager : MonoBehaviour
 	}
 
 	[SerializeField] private List<ObjectPool> _objectPoolList = new List<ObjectPool>();
+	public delegate void RecycleObject(string pool, GameObject obj);
+	public RecycleObject onRecycleObject;
 
 	private void Start()
 	{
 		PoolSetup();
+		onRecycleObject = OnRecycleObject;
 	}
 
 	// Setup pooled objects.
@@ -99,5 +107,24 @@ public class PoolManager : MonoBehaviour
 			Debug.LogError("No <ObjectPool> <" + name + "> was found. Unable to return Object.");
 		}
 		return null;
+	}
+
+	public void OnRecycleObject(string pool, GameObject obj)
+	{
+		// Return object to objectPool,
+		// Return back to Object Container.
+		// Disable the object.
+
+		foreach (ObjectPool objPool in _objectPoolList)
+		{
+			if (objPool.Name == pool)
+			{
+				if (objPool.Container != null)
+				{
+					obj.transform.parent = objPool.Container;
+					obj.SetActive(false);
+				}
+			}
+		}
 	}
 }
