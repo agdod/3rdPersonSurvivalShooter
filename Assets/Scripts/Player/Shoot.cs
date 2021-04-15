@@ -8,6 +8,7 @@ public class Shoot : MonoBehaviour
 	[SerializeField] private float _range = 100f;
 	[SerializeField] private int _damage;
 	[SerializeField] private GameObject _hitEffect;
+	[SerializeField] private PoolManager _poolManager;
 
 	private int _layerMask = 1 << 8;
 
@@ -48,7 +49,11 @@ public class Shoot : MonoBehaviour
 	{
 		// Instantiate blood splat effects at raycast postion.
 		// Rotate towards the hit normal postion (surface normal).
+		// NOTE : BloodSpat effect is Recycled, the recycling is controlled by BloodSplat itself.
+
 		Debug.Log("blood spat.");
-		Instantiate(_hitEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
+		GameObject go = _poolManager.RequestFromPool("BloodSplat");
+		go.transform.position = hitInfo.point;
+		go.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
 	}
 }

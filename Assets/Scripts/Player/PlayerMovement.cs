@@ -74,7 +74,8 @@ public class PlayerMovement : MonoBehaviour
 		if (cameraRotation.x > 180)
 		{
 			cameraRotation.x -= 360;
-		} else
+		}
+		else
 		{
 			// Do nothing.
 		}
