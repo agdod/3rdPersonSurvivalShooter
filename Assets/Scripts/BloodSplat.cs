@@ -23,7 +23,6 @@ public class BloodSplat : MonoBehaviour
 	private void Start()
 	{
 		_spriteRenderer = GetComponent<SpriteRenderer>();
-		//bubbleRecycle = OnBubbleRecycle;
 	}
 
 	private void OnRecycle()
@@ -41,7 +40,7 @@ public class BloodSplat : MonoBehaviour
 		{
 			alphaValue = Mathf.Lerp(1, 0, _timeElapsed / _fadeOutDuration);
 			_timeElapsed += Time.deltaTime;
-			_spriteRenderer.color = new Color(255,255,255,alphaValue);
+			_spriteRenderer.color = new Color(255, 255, 255, alphaValue);
 			yield return new WaitForEndOfFrame();
 		}
 		alphaValue = 0;
@@ -49,8 +48,8 @@ public class BloodSplat : MonoBehaviour
 		bubbleRecycle(this.gameObject);
 	}
 
-	public void OnBubbleRecycle(GameObject obj)
+	public void OnTargetDestroyed()
 	{
-		this.gameObject.SetActive(false);
+		bubbleRecycle(this.gameObject);
 	}
 }

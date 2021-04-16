@@ -33,19 +33,23 @@ public class Shoot : MonoBehaviour
 		Vector3 crossHairPoint = new Vector3(0.5f, 0.5f, 0f);
 		Ray rayOrigin = Camera.main.ViewportPointToRay(crossHairPoint);
 		RaycastHit hitInfo;
-		if (Physics.Raycast(rayOrigin, out hitInfo, _range,_layerMask))
+		if (Physics.Raycast(rayOrigin, out hitInfo, _range, _layerMask))
 		{
 			Debug.DrawLine(rayOrigin.origin, hitInfo.point, Color.red);
 			Debug.Log(" Hit object " + hitInfo.transform.name);
 			if (hitInfo.collider.TryGetComponent(out Health health))
 			{
-				VisualEffects(hitInfo);
-				health.Damage(_damage);
+				if (!health.Dead)
+				{
+					VisualEffects(hitInfo, health);
+					health.Damage(_damage);
+				}
+
 			}
 		}
 	}
 
-	private void VisualEffects(RaycastHit hitInfo)
+	private void VisualEffects(RaycastHit hitInfo, Health health)
 	{
 		// Instantiate blood splat effects at raycast postion.
 		// Rotate towards the hit normal postion (surface normal).
@@ -61,10 +65,13 @@ public class Shoot : MonoBehaviour
 		go.transform.parent = hitInfo.transform;
 		BloodSplat bloodSplat = go.GetComponent<BloodSplat>();
 		bloodSplat.bubbleRecycle += OnBubbleRecycleObject;
+		health.deactivate += bloodSplat.OnTargetDestroyed;
 	}
 
 	private void OnBubbleRecycleObject(GameObject obj)
 	{
+		BloodSplat bloodSplat = obj.GetComponent<BloodSplat>();
+		bloodSplat.bubbleRecycle -= OnBubbleRecycleObject;
 		_poolManager.onRecycleObject("BloodSplat", obj);
 	}
 

@@ -93,7 +93,7 @@ public class EnemyAI : MonoBehaviour
 
 	private void OnTriggerExit(Collider other)
 	{
-		if (other.tag== "Player")
+		if (other.tag == "Player")
 		{
 			_state = State.Chase;
 			StopCoroutine(BeginAttack());
@@ -110,13 +110,12 @@ public class EnemyAI : MonoBehaviour
 				_playerHealth.Damage(_attackDamage);
 				Debug.Log("Attacking player");
 			}
-			
 		}
 	}
 
 	public void StartAttack()
 	{
-		if ( _state != State.Attack && _player != null)
+		if (_state != State.Attack && _player != null)
 		{
 			_state = State.Attack;
 			StartCoroutine(BeginAttack());
