@@ -82,24 +82,6 @@ public class EnemyAI : MonoBehaviour
 		_enemyCC.Move(velocity);
 	}
 
-	private void OnTriggerEnter(Collider other)
-	{
-		if (other.tag == "Player" && _state != State.Attack)
-		{
-			_state = State.Attack;
-			StartCoroutine(BeginAttack());
-		}
-	}
-
-	private void OnTriggerExit(Collider other)
-	{
-		if (other.tag == "Player")
-		{
-			_state = State.Chase;
-			StopCoroutine(BeginAttack());
-		}
-	}
-
 	private IEnumerator BeginAttack()
 	{
 		while (_state == State.Attack)
