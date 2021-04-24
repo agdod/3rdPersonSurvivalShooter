@@ -68,7 +68,7 @@ public class Shoot : MonoBehaviour
 	{
 		BloodSplat bloodSplat = obj.GetComponent<BloodSplat>();
 		bloodSplat.bubbleRecycle -= OnBubbleRecycleObject;
-		_poolManager.onRecycleObject("BloodSplat", obj);
+		_poolManager.RecycleObject("BloodSplat", obj);
 	}
 
 }

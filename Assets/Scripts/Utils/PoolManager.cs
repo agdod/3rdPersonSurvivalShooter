@@ -68,13 +68,10 @@ public class PoolManager : MonoBehaviour
 	}
 
 	[SerializeField] private List<ObjectPool> _objectPoolList = new List<ObjectPool>();
-	public delegate void RecycleObject(string pool, GameObject obj);
-	public RecycleObject onRecycleObject;
 
 	private void Start()
 	{
 		PoolSetup();
-		onRecycleObject = OnRecycleObject;
 	}
 
 	// Setup pooled objects.
@@ -109,7 +106,7 @@ public class PoolManager : MonoBehaviour
 		return null;
 	}
 
-	public void OnRecycleObject(string pool, GameObject obj)
+	public void RecycleObject(string pool, GameObject obj)
 	{
 		// Return object to objectPool,
 		// Return back to Object Container.
