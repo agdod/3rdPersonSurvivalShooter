@@ -9,13 +9,18 @@ public class Health : MonoBehaviour
 	[SerializeField]
 	public bool Dead { get; private set; }
 	public delegate void Deactivate();
-	public Deactivate deactivate;
+	public event Deactivate deactivate;
 
 	private void Start()
 	{
 		_currentHealth = _maxHealth;
 		deactivate += OnDeactivate;
 		Dead = false;
+	}
+
+	private void OnDisable()
+	{
+		deactivate -= OnDeactivate;
 	}
 
 	public void Damage(int amount)
@@ -25,17 +30,17 @@ public class Health : MonoBehaviour
 		{
 			Debug.Log(gameObject.name + " is dead.");
 			Dead = true;
-			deactivate();
+			if (deactivate != null)
+			{
+				deactivate();
+			}
 		}
 	}
 
 	private void OnDeactivate()
 	{
-		// Disable 
-		// TODO - return to Enemy Pool.
-		// Remove all listeners.
-		// Add small delay to allow any listernes to process.
-		// Alternativaly loop throguh each listener...
+		// Add small delay to allow any subscribers to process.
+		
 		Invoke("DisableThis", 0.1f);
 	}
 

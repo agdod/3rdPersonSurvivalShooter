@@ -10,6 +10,7 @@ public class BloodSplat : MonoBehaviour
 	[SerializeField] private float _fadeOutDuration;
 	[SerializeField] private float _timeToLive;
 	private float _timeElapsed;
+	private Health _enemyHealth;
 	private SpriteRenderer _spriteRenderer;
 
 	public delegate void BubbleRecycle(GameObject obj);
@@ -18,6 +19,14 @@ public class BloodSplat : MonoBehaviour
 	private void OnEnable()
 	{
 		Invoke("OnRecycle", _timeToLive);
+	}
+
+	private void OnDisable()
+	{
+		if (_enemyHealth != null)
+		{
+			_enemyHealth.deactivate -= OnTargetDestroyed;
+		}	
 	}
 
 	private void Start()
@@ -48,8 +57,22 @@ public class BloodSplat : MonoBehaviour
 		bubbleRecycle(this.gameObject);
 	}
 
+	public void CacheEnemyHealth(Health health)
+	{
+		// Gets and cache refernce to enemy health that Bloodspat is on.
+		// Used to subscribe and unscribe to Events.
+
+		_enemyHealth = health;
+		_enemyHealth.deactivate += OnTargetDestroyed;
+	}
+
+
 	public void OnTargetDestroyed()
 	{
-		bubbleRecycle(this.gameObject);
+		if (bubbleRecycle != null)
+		{
+			bubbleRecycle(this.gameObject);
+		}
+		
 	}
 }

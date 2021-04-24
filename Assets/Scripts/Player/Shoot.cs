@@ -44,7 +44,6 @@ public class Shoot : MonoBehaviour
 					VisualEffects(hitInfo, health);
 					health.Damage(_damage);
 				}
-
 			}
 		}
 	}
@@ -56,16 +55,13 @@ public class Shoot : MonoBehaviour
 		// Parent to enemy so Splat moves with enemy.
 		// On recycling send back to pool - use of delegect to return to objectpool.
 
-		// TODO - what happends when enemy is destroyed, Bloodspat will be destroyed with enemy
-		// Bloodspat need recyvling on destroying of enemy.
-
 		GameObject go = _poolManager.RequestFromPool("BloodSplat");
 		go.transform.position = hitInfo.point;
 		go.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
 		go.transform.parent = hitInfo.transform;
 		BloodSplat bloodSplat = go.GetComponent<BloodSplat>();
 		bloodSplat.bubbleRecycle += OnBubbleRecycleObject;
-		health.deactivate += bloodSplat.OnTargetDestroyed;
+		bloodSplat.CacheEnemyHealth(health);
 	}
 
 	private void OnBubbleRecycleObject(GameObject obj)
